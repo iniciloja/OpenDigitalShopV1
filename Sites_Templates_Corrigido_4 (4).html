@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECommerce Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #3B82F6;
+      --secondary: #10B981;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F3F4F6;
+      color: #1F2937;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 { font-size: 24px; margin: 0 0 4px 0; font-weight: 600; }
+    .header p { font-size: 12px; opacity: 0.8; margin: 0; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn-primary { background: var(--primary); color: white; padding: 10px 16px; }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary { background: var(--secondary); color: white; padding: 10px 16px; }
+    .btn-secondary:hover { opacity: 0.9; }
+
+    .btn-danger { background: #EF4444; color: white; padding: 10px 16px; }
+    .btn-danger:hover { opacity: 0.9; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-ghost:hover { background: rgba(255,255,255,0.3); }
+
+    .card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      margin-bottom: 1rem;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    input[type="color"] {
+      width: 56px;
+      height: 56px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6B7280;
+      margin-bottom: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #E5E7EB;
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: #6B7280;
+      padding: 12px 16px;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 2rem;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-image { font-size: 48px; margin-bottom: 8px; }
+    .product-price { color: var(--primary); font-weight: 700; margin: 8px 0; }
+
+    .list-item {
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: #F9FAFB;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .empty { text-align: center; color: #6B7280; padding: 2rem; }
+
+    @media (max-width: 768px) {
+      .header { padding: 1rem; }
+      .header h1 { font-size: 18px; }
+      .header-content { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .container { padding: 1rem; }
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+      .tabs { flex-wrap: wrap; }
+      .card { padding: 1rem; }
+      input, textarea { font-size: 16px; }
+    }
+    
+    @media (max-width: 480px) {
+      .header h1 { font-size: 16px; }
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.8rem; }
+      .product-card { padding: 0.8rem; }
+      button { font-size: 13px; padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    class App {
+      constructor() {
+        this.store = this.load();
+        this.cart = [];
+        this.page = 'store';
+        this.activeTab = 'config';
+        this.search = '';
+        this.selectedCategory = 'All';
+        this.showCart = false;
+        this.updateColors();
+        this.render();
+      }
+
+      load() {
+        try {
+          const saved = localStorage.getItem('store_' + SITE_ID);
+          const data = saved ? JSON.parse(saved) : {
+            name: 'Minha Loja',
+            slug: 'minha-loja',
+            primary: '#A92D2D',
+            secondary: '#10B981',
+            password: '',
+            logo: '🛍️',
+            categories: [],
+            products: []
+          };
+          
+          // Garantir que tem logo
+          if (!data.logo) data.logo = '🛍️';
+          if (!data.logoImage) data.logoImage = null;
+          // Garantir campos de pagamento
+          if (!data.paymentGateway) data.paymentGateway = 'demo';
+          if (!data.apiSecret) data.apiSecret = '';
+          if (!data.apiPublic) data.apiPublic = '';
+          if (!data.whatsappNumber) data.whatsappNumber = '';
+          return data;
+        } catch (e) {
+          console.warn('localStorage indisponível (modo incógnito?)');
+          return {
+            name: 'Minha Loja',
+            slug: 'minha-loja',
+            primary: '#A92D2D',
+            secondary: '#10B981',
+            password: '',
+            logo: '🛍️',
+            categories: [],
+            products: []
+          };
+        }
+      }
+
+      save() {
+        try {
+          localStorage.setItem('store_' + SITE_ID, JSON.stringify(this.store));
+        } catch (e) {
+          console.warn('Não foi possível salvar dados (localStorage bloqueado)');
+        }
+        this.updateColors();
+      }
+
+      updateColors() {
+        document.documentElement.style.setProperty('--primary', this.store.primary);
+        document.documentElement.style.setProperty('--secondary', this.store.secondary);
+      }
+
+      slug(name) {
+        return name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+      }
+
+      // Detectar se cor é clara ou escura
+      isColorLight(hex) {
+        const r = parseInt(hex.substr(1, 2), 16);
+        const g = parseInt(hex.substr(3, 2), 16);
+        const b = parseInt(hex.substr(5, 2), 16);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.5;
+      }
+
+      // Retornar cor do texto baseado na cor de fundo
+      getTextColor(bgColor) {
+        return this.isColorLight(bgColor) ? '#1F2937' : '#FFFFFF';
+      }
+
+      render() {
+        const app = document.getElementById('app');
+        
+        if (this.page === 'login') {
+          app.innerHTML = this.renderLogin();
+          setTimeout(() => {
+            document.getElementById('pwd').focus();
+            document.querySelector('form').onsubmit = (e) => {
+              e.preventDefault();
+              const senhaDigitada = document.getElementById('pwd').value;
+              
+              if (!senhaDigitada) {
+                alert('❌ Digite uma senha!');
+                return;
+              }
+              
+              // PRIMEIRA VEZ - senha vazia
+              if (!this.store.password || this.store.password === '') {
+                if (senhaDigitada.length < 4) {
+                  alert('❌ Senha deve ter no mínimo 4 caracteres!');
+                  return;
+                }
+                // Aceita qualquer senha e salva
+                this.store.password = senhaDigitada.trim();
+                this.save();
+                this.page = 'admin';
+                this.activeTab = 'config';
+                this.render();
+              } else {
+                // JÁ EXISTE SENHA - valida
+                if (senhaDigitada.trim() === this.store.password.trim()) {
+                  this.page = 'admin';
+                  this.activeTab = 'config';
+                  this.render();
+                } else {
+                  alert('❌ Senha incorreta!');
+                  document.getElementById('pwd').value = '';
+                  document.getElementById('pwd').focus();
+                }
+              }
+            };
+          }, 100);
+        } else if (this.page === 'admin') {
+          app.innerHTML = this.renderAdmin();
+          this.attachAdminListeners();
+        } else {
+          app.innerHTML = this.renderStore();
+        }
+      }
+
+      renderLogin() {
+        return `
+          <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #F3F4F6;">
+            <div class="modal-content">
+              <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 56px; height: 56px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 28px;">🔒</div>
+                <h2 style="font-size: 24px; margin: 0 0 8px 0;">Acesso Admin</h2>
+                <p style="font-size: 12px; color: #6B7280; margin: 0;">Apenas o dono da loja pode acessar</p>
+              </div>
+              <form>
+                <label class="label">Senha</label>
+                <input type="password" id="pwd" placeholder="Digite a senha">
+                <button type="submit" class="btn-primary" style="width: 100%;">Entrar</button>
+              </form>
+              <div style="margin-top: 1rem; padding: 12px; background: #E8F5E9; border-radius: 6px; font-size: 12px; text-align: center; color: #2E7D32;">
+                ℹ️ Entre em contato com o dono da loja se esqueceu a senha
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      renderStore() {
+        const cats = ['All', ...this.store.categories];
+        const filtered = this.store.products.filter(p => 
+          p.name.toLowerCase().includes(this.search.toLowerCase()) &&
+          (this.selectedCategory === 'All' || p.category === this.selectedCategory)
+        );
+        const total = this.cart.reduce((s, p) => s + p.price, 0);
+        
+        // Cores com contraste automático
+        const headerBg = this.store.primary;
+        const headerText = this.getTextColor(headerBg);
+
+        return `
+          <div class="header" style="background: ${headerBg} !important;">
+            <div class="header-content">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                ${this.store.logoImage ? `
+                  <img src="${this.store.logoImage}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 6px;">
+                ` : `
+                  <span style="font-size: 32px;">${this.store.logo || '🛍️'}</span>
+                `}
+                <h1 style="color: ${headerText}; margin: 0;">${this.store.name}</h1>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button class="btn-ghost" onclick="app.showCart = !app.showCart; app.render()">🛒 ${this.cart.length}</button>
+                <button class="btn-ghost" onclick="app.page = 'login'; app.render()">⚙️ Admin</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            ${this.showCart && this.cart.length > 0 ? `
+              <div class="card">
+                <h2 style="margin-bottom: 1rem;">🛒 Carrinho</h2>
+                <div style="max-height: 300px; overflow-y: auto; margin-bottom: 1rem;">
+                  ${this.cart.map((p, i) => `
+                    <div class="cart-item">
+                      <span>${p.emoji} ${p.name}</span>
+                      <div style="display: flex; gap: 8px; align-items: center;">
+                        <span>R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                        <button style="background: #EF4444; color: white; padding: 4px 8px; font-size: 12px; border-radius: 4px;" onclick="app.cart.splice(${i}, 1); app.render()">✕</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+                <div style="border-top: 1px solid #E5E7EB; padding-top: 1rem;">
+                  <p style="font-size: 16px; font-weight: 600; margin: 0 0 1rem 0;">Total: R$ ${total.toFixed(2).replace('.', ',')}</p>
+                  <div style="display: flex; gap: 8px; flex-direction: column;">
+                    <button class="btn-secondary" style="width: 100%;" onclick="app.openCheckout()">💳 Pagar com Cartão</button>
+                    ${this.store.whatsappNumber ? `
+                      <button class="btn-primary" style="width: 100%; background: #25D366;" onclick="app.sendWhatsappOrder()">📱 Pedir via WhatsApp</button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            ${this.store.products.length === 0 ? `
+              <div class="empty">
+                <h2 style="color: #1F2937;">📦 Nenhum produto yet</h2>
+                <p>Clique em ⚙️ Admin para criar produtos</p>
+              </div>
+            ` : `
+              <div class="card">
+                <input type="text" placeholder="🔍 Buscar..." onkeyup="app.search = this.value; app.render()">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
+                  ${cats.map(c => `
+                    <button style="padding: 8px 16px; border-radius: 20px; border: 1px solid #E5E7EB; background: ${this.selectedCategory === c ? 'var(--primary)' : 'white'}; color: ${this.selectedCategory === c ? 'white' : '#1F2937'};" onclick="app.selectedCategory = '${c}'; app.render()">${c}</button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="product-grid">
+                ${filtered.map(p => `
+                  <div class="product-card">
+                    <div class="product-image" style="background: ${p.image ? 'transparent' : 'linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%)'}; display: flex; align-items: center; justify-content: center;">
+                      ${p.image ? `
+                        <img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px 8px 0 0;">
+                      ` : `
+                        <span style="font-size: 48px;">${p.emoji}</span>
+                      `}
+                    </div>
+                    <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">${p.name}</h3>
+                    <p style="font-size: 12px; color: #6B7280; margin: 4px 0 12px 0;">${p.category}</p>
+                    <div class="product-price">R$ ${p.price.toFixed(2).replace('.', ',')}</div>
+                    <button class="btn-secondary" style="width: 100%; font-size: 13px;" onclick="app.addToCart(${p.id})">Adicionar</button>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      renderAdmin() {
+        return `
+          <div style="min-height: 100vh; background: #F3F4F6;">
+            <div style="background: white; border-bottom: 1px solid #E5E7EB; padding: 1rem;">
+              <div class="header-content" style="max-width: 1200px; margin: 0 auto;">
+                <button class="btn-ghost" style="background: var(--primary); color: white; padding: 10px 16px;" onclick="app.page = 'store'; app.render()">🏪 Voltar à Loja</button>
+              </div>
+            </div>
+
+            <div class="container">
+              <div class="tabs">
+                <button class="tab-btn ${this.activeTab === 'pagamento' ? 'active' : ''}" onclick="app.activeTab = 'pagamento'; app.render()">💳 Pagamento</button>
+                <button class="tab-btn ${this.activeTab === 'config' ? 'active' : ''}" onclick="app.activeTab = 'config'; app.render()">⚙️ Configurações</button>
+                <button class="tab-btn ${this.activeTab === 'categories' ? 'active' : ''}" onclick="app.activeTab = 'categories'; app.render()">📂 Categorias</button>
+                <button class="tab-btn ${this.activeTab === 'products' ? 'active' : ''}" onclick="app.activeTab = 'products'; app.render()">📦 Produtos</button>
+              </div>
+
+              ${this.activeTab === 'pagamento' ? this.renderPaymentTab() : ''}
+              ${this.activeTab === 'config' ? this.renderConfig() : ''}
+              ${this.activeTab === 'categories' ? this.renderCategories() : ''}
+              ${this.activeTab === 'products' ? this.renderProducts() : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      renderPaymentTab() {
+        return `
+          <div class="card">
+            <h2 style="margin: 0 0 2rem 0;">💳 Configuração de Pagamento</h2>
+            
+            <div>
+              <label class="label">🔗 Gateway de Pagamento</label>
+              <select id="paymentGateway" style="margin-bottom: 1rem;">
+                <option value="demo" ${this.store.paymentGateway === 'demo' ? 'selected' : ''}>📌 Demo (Simulado)</option>
+                <option value="stripe" ${this.store.paymentGateway === 'stripe' ? 'selected' : ''}>Stripe</option>
+                <option value="paypal" ${this.store.paymentGateway === 'paypal' ? 'selected' : ''}>PayPal</option>
+                <option value="mercadopago" ${this.store.paymentGateway === 'mercadopago' ? 'selected' : ''}>Mercado Pago</option>
+                <option value="pagseguro" ${this.store.paymentGateway === 'pagseguro' ? 'selected' : ''}>PagSeguro</option>
+              </select>
+            </div>
+
+            ${this.store.paymentGateway && this.store.paymentGateway !== 'demo' ? `
+              <div>
+                <label class="label">🔐 API Secret Key</label>
+                <input type="password" id="apiSecret" value="${this.store.apiSecret || ''}" placeholder="Cole sua chave secreta aqui">
+                <small style="font-size: 12px; color: #6B7280; display: block; margin-top: -0.8rem; margin-bottom: 1rem;">Será salva no navegador de forma segura</small>
+              </div>
+
+              <div>
+                <label class="label">🔓 API Pública (Opcional)</label>
+                <input type="text" id="apiPublic" value="${this.store.apiPublic || ''}" placeholder="Cole sua chave pública (se necessário)">
+              </div>
+            ` : `
+              <div style="background: #E3F2FD; border-left: 4px solid #2196F3; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                <p style="margin: 0; font-size: 14px;"><strong>📌 Modo Demo</strong></p>
+                <p style="margin: 0.5rem 0 0 0; font-size: 12px; color: #1565C0;">Use para testes. Não processa pagamentos reais.</p>
+              </div>
+            `}
+
+            <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 2rem 0;">
+
+            <h2 style="margin: 0 0 1rem 0;">📱 WhatsApp (Alternativa)</h2>
+            <div>
+              <label class="label">📞 Número WhatsApp (Com código do país)</label>
+              <input type="text" id="whatsappNumber" value="${this.store.whatsappNumber || ''}" placeholder="Ex: 5511987654321 (55 = Brasil, 11 = SP)">
+              <small style="font-size: 12px; color: #6B7280; display: block; margin-top: -0.8rem; margin-bottom: 1rem;">Formato: [Código País][DDD][Número] - Sem símbolos</small>
+            </div>
+
+            ${this.store.whatsappNumber ? `
+              <div style="background: #C8E6C9; border: 1px solid #81C784; color: #2E7D32; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                ✅ WhatsApp ativado: <strong>+${this.store.whatsappNumber}</strong>
+              </div>
+            ` : ''}
+
+            <button class="btn-primary" onclick="app.savePaymentConfig()" style="width: 100%;">💾 Salvar Configuração</button>
+
+            ${this.store.paymentGateway && this.store.paymentGateway !== 'demo' && this.store.apiSecret ? `
+              <div style="margin-top: 1rem; background: #D4EDDA; border: 1px solid #C3E6CB; color: #155724; padding: 1rem; border-radius: 6px;">
+                ✅ <strong>${this.store.paymentGateway.toUpperCase()}</strong> ativado!
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      renderConfig() {
+        // Calcular luminância para aviso de contraste
+        const checkContrast = (hex) => {
+          const rgb = parseInt(hex.slice(1), 16);
+          const r = (rgb >> 16) & 255;
+          const g = (rgb >> 8) & 255;
+          const b = rgb & 255;
+          const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          return luminance > 0.7 ? '⚠️ CLARO - Difícil ler!' : '✅ Contraste OK';
+        };
+
+        return `
+          <div class="card">
+            <h2 style="margin: 0 0 2rem 0;">Configurações da Loja</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <label class="label">🖼️ Logo (Imagem)</label>
+                <input type="file" id="logoUpload" accept="image/*" style="padding: 8px;">
+                <button class="btn-primary" onclick="app.uploadLogo()" style="width: 100%; margin-top: 0.5rem;">Upload Logo</button>
+                ${this.store.logoImage ? `
+                  <div style="margin-top: 1rem; text-align: center;">
+                    <img src="${this.store.logoImage}" style="max-width: 150px; max-height: 80px; border-radius: 6px;">
+                  </div>
+                ` : ''}
+              </div>
+              <div>
+                <label class="label">📝 Nome da Loja</label>
+                <input type="text" id="storeName" value="${this.store.name}">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <label class="label">🎨 Cor Primária</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                  <input type="color" id="primary" value="${this.store.primary}">
+                  <input type="text" id="primaryText" value="${this.store.primary}" style="font-family: monospace; margin: 0;">
+                </div>
+                <small style="font-size: 11px; color: #6B7280; margin-top: 6px; display: block;">${checkContrast(this.store.primary)}</small>
+              </div>
+              <div>
+                <label class="label">✨ Cor Secundária</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                  <input type="color" id="secondary" value="${this.store.secondary}">
+                  <input type="text" id="secondaryText" value="${this.store.secondary}" style="font-family: monospace; margin: 0;">
+                </div>
+                <small style="font-size: 11px; color: #6B7280; margin-top: 6px; display: block;">${checkContrast(this.store.secondary)}</small>
+              </div>
+            </div>
+
+            <div style="background: #FFF3CD; border: 1px solid #FFE69C; color: #856404; padding: 1rem; border-radius: 6px; margin-bottom: 2rem;">
+              <p style="margin: 0; font-weight: 600;">🔒 Apenas o DONO da loja pode alterar a senha do admin</p>
+              <p style="margin: 0.5rem 0 0 0; font-size: 12px;">A senha atual está salva no navegador e não reseta mais</p>
+            </div>
+
+            <div>
+              <label class="label">🔐 Senha do Admin</label>
+              <input type="password" id="password" value="${this.store.password}">
+              <small style="font-size: 12px; color: #6B7280; display: block; margin-top: -0.8rem; margin-bottom: 1rem;">Mínimo 4 caracteres</small>
+            </div>
+
+            <button class="btn-secondary" onclick="app.saveConfig()">💾 Salvar Configurações</button>
+          </div>
+        `;
+      }
+
+      renderCategories() {
+        return `
+          <div class="card">
+            <h2 style="margin: 0 0 1.5rem 0;">Criar Nova Categoria</h2>
+            <input type="text" id="categoryName" placeholder="Nome da categoria (ex: Tops, Bottoms, Shoes)">
+            <button class="btn-primary" onclick="app.addCategory()">➕ Adicionar Categoria</button>
+          </div>
+
+          <div class="card">
+            <h2 style="margin: 0 0 1.5rem 0;">Categorias (${this.store.categories.length})</h2>
+            ${this.store.categories.length === 0 ? `
+              <p class="empty">Nenhuma categoria criada ainda</p>
+            ` : `
+              ${this.store.categories.map((cat, i) => `
+                <div class="list-item">
+                  <span>📂 ${cat}</span>
+                  <button class="btn-danger" onclick="app.deleteCategory(${i})">🗑️ Deletar</button>
+                </div>
+              `).join('')}
+            `}
+          </div>
+        `;
+      }
+
+      renderProducts() {
+        return `
+          <div class="card">
+            <h2 style="margin: 0 0 1.5rem 0;">Criar Novo Produto</h2>
+            <input type="text" id="prodName" placeholder="Nome do produto">
+            <input type="number" id="prodPrice" placeholder="Preço" step="0.01">
+            <input type="text" id="prodEmoji" placeholder="Emoji (ex: 👕)" maxlength="2" value="📦">
+            <select id="prodCategory">
+              <option value="">-- Selecione categoria --</option>
+              ${this.store.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+            </select>
+            <label class="label">📸 Imagem do Produto</label>
+            <input type="file" id="prodImage" accept="image/*" placeholder="Escolha uma imagem">
+            <button class="btn-primary" onclick="app.addProduct()">➕ Adicionar Produto</button>
+          </div>
+
+          <div class="card">
+            <h2 style="margin: 0 0 1.5rem 0;">Produtos (${this.store.products.length})</h2>
+            ${this.store.products.length === 0 ? `
+              <p class="empty">Nenhum produto criado ainda</p>
+            ` : `
+              ${this.store.products.map((prod, i) => `
+                <div class="list-item" style="align-items: center; gap: 12px;">
+                  <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                    ${prod.image ? `
+                      <img src="${prod.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                    ` : `
+                      <span style="font-size: 32px;">${prod.emoji}</span>
+                    `}
+                    <div>
+                      <strong>${prod.name}</strong> - ${prod.category}
+                      <div style="font-size: 12px; color: #6B7280;">R$ ${prod.price.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                  </div>
+                  <button class="btn-danger" onclick="app.deleteProduct(${i})">🗑️</button>
+                </div>
+              `).join('')}
+            `}
+          </div>
+        `;
+      }
+
+      addCategory() {
+        const name = document.getElementById('categoryName').value.trim();
+        if (!name) { alert('❌ Digite um nome!'); return; }
+        if (this.store.categories.includes(name)) { alert('❌ Categoria já existe!'); return; }
+        this.store.categories.push(name);
+        this.save();
+        document.getElementById('categoryName').value = '';
+        this.render();
+      }
+
+      addToCart(productId) {
+        const product = this.store.products.find(p => p.id === productId);
+        if (product) {
+          this.cart.push({...product});
+          this.render();
+        }
+      }
+
+      deleteCategory(i) {
+        if (confirm('Deletar esta categoria e seus produtos?')) {
+          const categoryName = this.store.categories[i];
+          this.store.categories.splice(i, 1);
+          this.store.products = this.store.products.filter(p => p.category !== categoryName);
+          this.save();
+          this.render();
+        }
+      }
+
+      addProduct() {
+        const name = document.getElementById('prodName').value.trim();
+        const price = parseFloat(document.getElementById('prodPrice').value);
+        const emoji = document.getElementById('prodEmoji').value.trim();
+        const cat = document.getElementById('prodCategory').value;
+        const imageFile = document.getElementById('prodImage').files[0];
+
+        // Validações específicas
+        if (!name) { alert('❌ Digite o nome do produto!'); return; }
+        if (!emoji) { alert('❌ Digite um emoji!'); return; }
+        if (!cat) { alert('❌ Selecione uma categoria!'); return; }
+        if (isNaN(price)) { alert('❌ Digite um preço válido!'); return; }
+        if (price < 0) { alert('❌ O preço não pode ser negativo!'); return; }
+
+        if (imageFile) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.store.products.push({
+              id: Date.now(),
+              name,
+              price,
+              emoji,
+              category: cat,
+              image: e.target.result
+            });
+            this.save();
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodEmoji').value = '';
+            document.getElementById('prodCategory').value = '';
+            document.getElementById('prodImage').value = '';
+            alert('✅ Produto adicionado com sucesso!');
+            this.render();
+          };
+          reader.readAsDataURL(imageFile);
+        } else {
+          this.store.products.push({
+            id: Date.now(),
+            name,
+            price,
+            emoji,
+            category: cat
+          });
+          this.save();
+          document.getElementById('prodName').value = '';
+          document.getElementById('prodPrice').value = '';
+          document.getElementById('prodEmoji').value = '';
+          document.getElementById('prodCategory').value = '';
+          alert('✅ Produto adicionado (sem imagem)!');
+          this.render();
+        }
+      }
+
+      deleteProduct(i) {
+        if (confirm('Deletar produto?')) {
+          this.store.products.splice(i, 1);
+          this.save();
+          this.render();
+        }
+      }
+
+      uploadLogo() {
+        const fileInput = document.getElementById('logoUpload');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+          alert('❌ Selecione uma imagem!');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.store.logoImage = e.target.result;
+          this.save();
+          alert('✅ Logo enviado com sucesso!');
+          this.render();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      savePaymentConfig() {
+        const gateway = document.getElementById('paymentGateway')?.value || 'demo';
+        const apiSecret = document.getElementById('apiSecret')?.value || '';
+        const apiPublic = document.getElementById('apiPublic')?.value || '';
+        const whatsappNumber = document.getElementById('whatsappNumber')?.value || '';
+
+        this.store.paymentGateway = gateway;
+        this.store.apiSecret = apiSecret;
+        this.store.apiPublic = apiPublic;
+        this.store.whatsappNumber = whatsappNumber;
+        this.save();
+        alert('✅ Configuração de pagamento salva!');
+        this.render();
+      }
+
+      sendWhatsappOrder() {
+        if (this.cart.length === 0) {
+          alert('❌ Carrinho vazio!');
+          return;
+        }
+
+        const total = this.cart.reduce((sum, p) => sum + p.price, 0);
+        const itemsList = this.cart.map(p => `• ${p.name} - R$ ${p.price.toFixed(2).replace('.', ',')}`).join('%0A');
+        
+        const message = `Olá! 👋%0A%0AGostaria de fazer um pedido da sua loja *${this.store.name}*%0A%0A*Produtos:*%0A${itemsList}%0A%0A*Total:* R$ ${total.toFixed(2).replace('.', ',')}%0A%0APodem confirmar a disponibilidade e formas de entrega?`;
+        
+        const whatsappUrl = `https://wa.me/${this.store.whatsappNumber}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+      }
+
+      saveConfig() {
+        const name = document.getElementById('storeName').value;
+        const primary = document.getElementById('primary').value;
+        const secondary = document.getElementById('secondary').value;
+        const password = document.getElementById('password').value.trim();
+
+        if (password.length < 4) { alert('❌ Senha deve ter 4+ caracteres!'); return; }
+
+        this.store.name = name;
+        this.store.slug = this.slug(name);
+        this.store.primary = primary;
+        this.store.secondary = secondary;
+        this.store.password = password;
+        this.save();
+        alert('✅ Salvo!');
+        this.render();
+      }
+
+      attachAdminListeners() {
+        const primary = document.getElementById('primary');
+        const primaryText = document.getElementById('primaryText');
+        const secondary = document.getElementById('secondary');
+        const secondaryText = document.getElementById('secondaryText');
+
+        if (primary && primaryText) {
+          primary.addEventListener('input', e => { primaryText.value = e.target.value; });
+          primaryText.addEventListener('input', e => { primary.value = e.target.value; });
+        }
+        if (secondary && secondaryText) {
+          secondary.addEventListener('input', e => { secondaryText.value = e.target.value; });
+          secondaryText.addEventListener('input', e => { secondary.value = e.target.value; });
+        }
+      }
+    }
+
+    let app = new App();
+  </script>
+</body>
+</html>
